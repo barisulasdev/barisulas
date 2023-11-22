@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: black;
+      color: #fff;
+      text-align: center;
+      font-family: Helvetica, sans-serif;
+    }
+
+    #game-board {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      border: none;
+    }
+
+    .snake {
+      position: absolute;
+      background-color: white;
+    }
+
+    .food {
+      position: absolute;
+      background-color: #ff1361;
+    }
+
+    #start-message {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 2vw;
+      display: block; /* Initially set to block */
+    }
+
+    .animate-charcter{
+            background-image: linear-gradient(
+                -225deg,
+                #ff1361 0%,
+                #44107a 56%,
+                #44107a 57%,
+                #ff1361 100%
+            );
+            background-size: auto auto;
+            background-clip: border-box;
+            background-size: 200% auto;
+            color: #fff;
+            background-clip: text;
+            text-fill-color: transparent;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: textclip 7s linear infinite;
+            display: inline-block;
+            }
+
+        @keyframes textclip{
+        to{
+            background-position: 200% center;
+            }
+        }
+  </style>
+  <title>barisulas.com</title>
+</head>
+<body>
+  <div id="game-board"></div>
+  <div id="start-message">Welcome to my website! <br/> <br/> Unfortunately, it is currently under construction. <br/>In the meantime, <p class="animate-charcter"> press any key to start</p>.</div>
+
+  <script>
+    let boardSize;
+    const tileSize = 20;
+    const gameBoard = document.getElementById('game-board');
+    const startMessage = document.getElementById('start-message');
+    let snake;
+    let food;
+    let gameRunning = false;
+
+    function calculateBoardSize() {
+      return Math.floor(Math.min(window.innerWidth, window.innerHeight) / tileSize);
+    }
+
+    function getRandomPosition() {
+      return {
+        x: Math.floor(Math.random() * boardSize),
+        y: Math.floor(Math.random() * boardSize),
+      };
+    }
+
+    function draw() {
+      gameBoard.innerHTML = '';
+
+      // Draw snake
+      snake.forEach(segment => {
+        const snakeElement = document.createElement('div');
+        snakeElement.style.width = `${tileSize}px`;
+        snakeElement.style.height = `${tileSize}px`;
+        snakeElement.style.left = `${segment.x * tileSize}px`;
+        snakeElement.style.top = `${segment.y * tileSize}px`;
+        snakeElement.classList.add('snake');
+        gameBoard.appendChild(snakeElement);
+      });
+
+      // Draw food
+      const foodElement = document.createElement('div');
+      foodElement.style.width = `${tileSize}px`;
+      foodElement.style.height = `${tileSize}px`;
+      foodElement.style.left = `${food.x * tileSize}px`;
+      foodElement.style.top = `${food.y * tileSize}px`;
+      foodElement.classList.add('food');
+      gameBoard.appendChild(foodElement);
+    }
+
+    function update() {
+      if (!gameRunning) {
+        return;
+      }
+
+      // Move snake
+      const head = { ...snake[0] };
+      switch (direction) {
+        case 'UP':
+          head.y -= 1;
+          break;
+        case 'DOWN':
+          head.y += 1;
+          break;
+        case 'LEFT':
+          head.x -= 1;
+          break;
+        case 'RIGHT':
+          head.x += 1;
+          break;
+      }
+
+      // Check collision with walls
+      if (head.x < 0 || head.x >= boardSize || head.y < 0 || head.y >= boardSize) {
+        stopGame();
+        return;
+      }
+
+      // Check collision with self
+      if (snake.some(segment => segment.x === head.x && segment.y === head.y)) {
+        stopGame();
+        return;
+      }
+
+      // Check collision with food
+      if (head.x === food.x && head.y === food.y) {
+        snake.unshift({ ...food });
+        food = getRandomPosition();
+      } else {
+        // Move snake
+        snake.pop();
+        snake.unshift(head);
+      }
+
+      draw();
+    }
+
+    function startGame() {
+      boardSize = calculateBoardSize();
+      snake = [{ x: Math.floor(boardSize / 2), y: Math.floor(boardSize / 2) }];
+      food = getRandomPosition();
+      gameRunning = true;
+      startMessage.style.display = 'none';
+      draw();
+    }
+
+    function stopGame() {
+      alert('Game Over! Press OK to play again.');
+      direction = 'RIGHT';
+      gameRunning = false;
+      startMessage.style.display = 'block';
+    }
+
+    let direction = 'RIGHT';
+
+    document.addEventListener('keydown', (event) => {
+      if (!gameRunning) {
+        startGame();
+        return;
+      }
+
+      switch (event.key) {
+        case 'ArrowUp':
+          direction = 'UP';
+          break;
+        case 'ArrowDown':
+          direction = 'DOWN';
+          break;
+        case 'ArrowLeft':
+          direction = 'LEFT';
+          break;
+        case 'ArrowRight':
+          direction = 'RIGHT';
+          break;
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      if (!gameRunning) {
+        boardSize = calculateBoardSize();
+        draw();
+      }
+    });
+
+    setInterval(update, 200); // Update every 200 milliseconds
+
+    window.addEventListener('scroll', function() {
+          var disappearingText = document.getElementById('disappearingText');
+            if (window.scrollY > 50) { // Adjust the threshold as needed
+            disappearingText.classList.add('hidden');
+            } else {
+            disappearingText.classList.remove('hidden');
+            }
+        });
+  </script>
+</body>
+</html>
