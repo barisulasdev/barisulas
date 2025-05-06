@@ -16,10 +16,9 @@
       font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
       color: white;
       position: relative;
-      height: 200vh; /* Increase the height for more scroll */
+      height: 200vh;
     }
 
-    /* Slideshow container for images */
     #image-container {
       display: flex;
       justify-content: center;
@@ -27,11 +26,12 @@
       width: 100%;
       height: 100vh;
       gap: 10px;
+      flex-wrap: nowrap;
+      transition: opacity 0.5s ease;
     }
 
-    /* Individual images */
     .image {
-      width: 30%; /* Each image will take up 30% of the container width */
+      width: 30%;
       height: auto;
       object-fit: cover;
       border-radius: 10px;
@@ -47,7 +47,8 @@
       z-index: 1001;
       border-bottom: 1px solid transparent;
       text-align: center;
-      font-size: 1vw;
+      font-size: 2vw;
+      transition: transform 0.3s ease;
     }
 
     header nav ul {
@@ -61,7 +62,7 @@
     header nav ul li a {
       color: white;
       text-decoration: none;
-      font-size: 1vw;
+      font-size: 2vw;
       font: Helvetica;
     }
 
@@ -114,6 +115,52 @@
     a {
       color: lightblue;
     }
+
+    /* ------- MOBILE STYLES ONLY ------- */
+    @media (max-width: 768px) {
+      header {
+        font-size: 4vw;
+        padding: 3vw;
+      }
+
+      header nav ul {
+        flex-direction: column;
+        gap: 2vw;
+      }
+
+      header nav ul li a {
+        font-size: 5vw;
+      }
+
+      #image-container {
+        flex-direction: column;
+        height: auto;
+        padding-top: 20vh;
+      }
+
+      .image {
+        width: 90%;
+      }
+
+      #content {
+        font-size: 5vw;
+        padding: 8vw;
+      }
+
+      #final-text {
+        font-size: 5vw;
+        padding: 8vw;
+      }
+
+      #image-container.mobile-hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      header.mobile-hidden {
+        transform: translateY(-100%);
+      }
+    }
   </style>
 </head>
 <body>
@@ -126,7 +173,7 @@
 </div>
 
 <!-- Header with navigation -->
-<header>
+<header id="main-header">
   <nav>
     <ul>
       <li><a href="propagandalab.html">HOME</a></li>
@@ -139,6 +186,7 @@
 
 <!-- Main Content -->
 <div id="content">
+  <!-- Your content goes here -->
 </div>
 
 <!-- Overlay lines -->
@@ -147,16 +195,20 @@
 <!-- Final Text -->
 <div id="final-text">
   <p>
-“We feel free because we lack the very language to articulate our unfreedom.”
-― Slavoj Žižek
-<br> <br> PROPAGANDA<b>4</b>US - THE PROPAGANDA LAB 2025©
-<p>
+    “We feel free because we lack the very language to articulate our unfreedom.”
+    ― Slavoj Žižek
+    <br><br> PROPAGANDA<b>4</b>US - THE PROPAGANDA LAB 2025©
+  </p>
+</div>
+
 <!-- Scroll Script -->
 <script>
   const lineCount = 20;
   const overlay = document.getElementById("overlay");
   const finalText = document.getElementById("final-text");
   const lines = [];
+  const imageContainer = document.getElementById("image-container");
+  const header = document.getElementById("main-header");
 
   for (let i = 0; i < lineCount; i++) {
     const line = document.createElement("div");
@@ -165,6 +217,8 @@
     overlay.appendChild(line);
     lines.push(line);
   }
+
+  let lastScrollTop = 0;
 
   window.addEventListener("scroll", () => {
     const scrollTop = window.scrollY;
@@ -198,6 +252,24 @@
     }
 
     finalText.style.opacity = scrollFraction >= 1 ? "1" : "0";
+
+    // --- MOBILE ONLY BEHAVIOR ---
+    if (window.innerWidth <= 768) {
+      // Hide header on scroll down
+      if (scrollTop > lastScrollTop) {
+        header.classList.add("mobile-hidden");
+      } else {
+        header.classList.remove("mobile-hidden");
+      }
+      lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+
+      // Hide image container when fully scrolled
+      if (scrollFraction >= 1) {
+        imageContainer.classList.add("mobile-hidden");
+      } else {
+        imageContainer.classList.remove("mobile-hidden");
+      }
+    }
   });
 </script>
 
