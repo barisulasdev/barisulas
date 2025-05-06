@@ -1,227 +1,205 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Propaganda Laboratory</title>
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
+      background-color: black;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      color: white;
+      position: relative;
+      height: 200vh; /* Increase the height for more scroll */
+    }
+
+    /* Slideshow container for images */
+    #image-container {
       display: flex;
       justify-content: center;
       align-items: center;
+      width: 100%;
       height: 100vh;
-      margin: 0;
-      background-color: black;
-      color: #fff;
+      gap: 10px;
+    }
+
+    /* Individual images */
+    .image {
+      width: 30%; /* Each image will take up 30% of the container width */
+      height: auto;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background-color: transparent;
+      padding: 1vw;
+      z-index: 1001;
+      border-bottom: 1px solid transparent;
       text-align: center;
-      font-family: Helvetica, sans-serif;
+      font-size: 1vw;
     }
 
-    #game-board {
-      position: relative;
-      width: 100vw;
+    header nav ul {
+      display: inline-flex;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      gap: 4rem;
+    }
+
+    header nav ul li a {
+      color: white;
+      text-decoration: none;
+      font-size: 1vw;
+      font: Helvetica;
+    }
+
+    #content {
+      padding: 6rem 5vw 5vw 5vw;
+      max-width: 100%;
+      margin: 0 auto;
+      text-align: justify;
+      font-size: 1vw;
+      line-height: 1.5;
+    }
+
+    #overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
       height: 100vh;
-      border: none;
+      width: 100%;
+      pointer-events: none;
+      z-index: 999;
     }
 
-    .snake {
+    .line {
       position: absolute;
-      background-color: white;
+      width: 100%;
+      height: 0px;
+      background-color: black;
+      opacity: 0;
+      transition: opacity 0.3s, height 0.3s;
     }
 
-    .food {
-      position: absolute;
-      background-color: #ff1361;
-    }
-
-    #start-message {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+    #final-text {
+      position: fixed;
+      top: 0;
+      left: 0;
       font-size: 2vw;
-      display: block; /* Initially set to block */
+      padding: 5vw;
+      background: black;
+      color: white;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.5s;
+      pointer-events: none;
+      margin: 0 auto;
+      line-height: 1.5;
+      text-align: justify;
+      width: 100%;
     }
 
-    .animate-charcter{
-            background-image: linear-gradient(
-                -225deg,
-                #ff1361 0%,
-                #44107a 56%,
-                #44107a 57%,
-                #ff1361 100%
-            );
-            background-size: auto auto;
-            background-clip: border-box;
-            background-size: 200% auto;
-            color: #fff;
-            background-clip: text;
-            text-fill-color: transparent;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: textclip 7s linear infinite;
-            display: inline-block;
-            }
-
-        @keyframes textclip{
-        to{
-            background-position: 200% center;
-            }
-        }
+    a {
+      color: lightblue;
+    }
   </style>
-  <title>barisulas.com</title>
 </head>
 <body>
-  <div id="game-board"></div>
-  <div id="start-message">Welcome to my website! <br/> <br/> Unfortunately, it is currently under construction. <br/>In the meantime, <p class="animate-charcter"> press any key to start</p>.</div>
 
-  <script>
-    let boardSize;
-    const tileSize = 20;
-    const gameBoard = document.getElementById('game-board');
-    const startMessage = document.getElementById('start-message');
-    let snake;
-    let food;
-    let gameRunning = false;
+<!-- Slideshow with 3 images side by side -->
+<div id="image-container">
+  <img src="images.jpeg" alt="Image 1" class="image">
+  <img src="images.jpeg" alt="Image 2" class="image">
+  <img src="images.jpeg" alt="Image 3" class="image">
+</div>
 
-    function calculateBoardSize() {
-      return Math.floor(Math.min(window.innerWidth, window.innerHeight) / tileSize);
-    }
+<!-- Header with navigation -->
+<header>
+  <nav>
+    <ul>
+      <li><a href="propagandalab.html">HOME</a></li>
+      <li><a href="about.html">OUR OFFERS</a></li>
+      <li><a href="team.html">WHO WE ARE</a></li>
+      <li><a href="contact.html">CONTACT</a></li>
+    </ul>
+  </nav>
+</header>
 
-    function getRandomPosition() {
-      return {
-        x: Math.floor(Math.random() * boardSize),
-        y: Math.floor(Math.random() * boardSize),
-      };
-    }
+<!-- Main Content -->
+<div id="content">
+</div>
 
-    function draw() {
-      gameBoard.innerHTML = '';
+<!-- Overlay lines -->
+<div id="overlay"></div>
 
-      // Draw snake
-      snake.forEach(segment => {
-        const snakeElement = document.createElement('div');
-        snakeElement.style.width = `${tileSize}px`;
-        snakeElement.style.height = `${tileSize}px`;
-        snakeElement.style.left = `${segment.x * tileSize}px`;
-        snakeElement.style.top = `${segment.y * tileSize}px`;
-        snakeElement.classList.add('snake');
-        gameBoard.appendChild(snakeElement);
+<!-- Final Text -->
+<div id="final-text">
+  <p>
+“We feel free because we lack the very language to articulate our unfreedom.”
+― Slavoj Žižek
+<br> <br> PROPAGANDA<b>4</b>US - THE PROPAGANDA LAB 2025©
+<p>
+<!-- Scroll Script -->
+<script>
+  const lineCount = 20;
+  const overlay = document.getElementById("overlay");
+  const finalText = document.getElementById("final-text");
+  const lines = [];
+
+  for (let i = 0; i < lineCount; i++) {
+    const line = document.createElement("div");
+    line.className = "line";
+    line.style.top = `${i * (100 / lineCount)}vh`;
+    overlay.appendChild(line);
+    lines.push(line);
+  }
+
+  window.addEventListener("scroll", () => {
+    const scrollTop = window.scrollY;
+    const docHeight = document.body.scrollHeight - window.innerHeight;
+    const scrollFraction = scrollTop / docHeight;
+
+    const bgColor = 400 * scrollFraction;
+    document.body.style.backgroundColor = `rgb(${bgColor}, ${bgColor}, ${bgColor})`;
+    document.body.style.color = scrollFraction > 0.5 ? 'black' : 'white';
+
+    const activationThreshold = 0.8;
+
+    if (scrollFraction > activationThreshold) {
+      const adjustedFraction = (scrollFraction - activationThreshold) / (1 - activationThreshold);
+
+      lines.forEach((line, i) => {
+        const triggerPoint = (i + 0.1) / lineCount;
+        if (adjustedFraction > triggerPoint * 0.5) {
+          line.style.opacity = "1";
+          line.style.height = `${1 + (adjustedFraction - triggerPoint) * 75}px`;
+        } else {
+          line.style.opacity = "0";
+          line.style.height = "0px";
+        }
       });
-
-      // Draw food
-      const foodElement = document.createElement('div');
-      foodElement.style.width = `${tileSize}px`;
-      foodElement.style.height = `${tileSize}px`;
-      foodElement.style.left = `${food.x * tileSize}px`;
-      foodElement.style.top = `${food.y * tileSize}px`;
-      foodElement.classList.add('food');
-      gameBoard.appendChild(foodElement);
+    } else {
+      lines.forEach(line => {
+        line.style.opacity = "0";
+        line.style.height = "0px";
+      });
     }
 
-    function update() {
-      if (!gameRunning) {
-        return;
-      }
+    finalText.style.opacity = scrollFraction >= 1 ? "1" : "0";
+  });
+</script>
 
-      // Move snake
-      const head = { ...snake[0] };
-      switch (direction) {
-        case 'UP':
-          head.y -= 1;
-          break;
-        case 'DOWN':
-          head.y += 1;
-          break;
-        case 'LEFT':
-          head.x -= 1;
-          break;
-        case 'RIGHT':
-          head.x += 1;
-          break;
-      }
-
-      // Check collision with walls
-      if (head.x < 0 || head.x >= boardSize || head.y < 0 || head.y >= boardSize) {
-        stopGame();
-        return;
-      }
-
-      // Check collision with self
-      if (snake.some(segment => segment.x === head.x && segment.y === head.y)) {
-        stopGame();
-        return;
-      }
-
-      // Check collision with food
-      if (head.x === food.x && head.y === food.y) {
-        snake.unshift({ ...food });
-        food = getRandomPosition();
-      } else {
-        // Move snake
-        snake.pop();
-        snake.unshift(head);
-      }
-
-      draw();
-    }
-
-    function startGame() {
-      boardSize = calculateBoardSize();
-      snake = [{ x: Math.floor(boardSize / 2), y: Math.floor(boardSize / 2) }];
-      food = getRandomPosition();
-      gameRunning = true;
-      startMessage.style.display = 'none';
-      draw();
-    }
-
-    function stopGame() {
-      alert('Game Over! Press OK to play again.');
-      direction = 'RIGHT';
-      gameRunning = false;
-      startMessage.style.display = 'block';
-    }
-
-    let direction = 'RIGHT';
-
-    document.addEventListener('keydown', (event) => {
-      if (!gameRunning) {
-        startGame();
-        return;
-      }
-
-      switch (event.key) {
-        case 'ArrowUp':
-          direction = 'UP';
-          break;
-        case 'ArrowDown':
-          direction = 'DOWN';
-          break;
-        case 'ArrowLeft':
-          direction = 'LEFT';
-          break;
-        case 'ArrowRight':
-          direction = 'RIGHT';
-          break;
-      }
-    });
-
-    window.addEventListener('resize', () => {
-      if (!gameRunning) {
-        boardSize = calculateBoardSize();
-        draw();
-      }
-    });
-
-    setInterval(update, 200); // Update every 200 milliseconds
-
-    window.addEventListener('scroll', function() {
-          var disappearingText = document.getElementById('disappearingText');
-            if (window.scrollY > 50) { // Adjust the threshold as needed
-            disappearingText.classList.add('hidden');
-            } else {
-            disappearingText.classList.remove('hidden');
-            }
-        });
-  </script>
 </body>
 </html>
